@@ -2419,6 +2419,20 @@ function parseBaseComponent (vueComponentOptions, {
       __e: handleEvent
     }
   };
+
+  // 支持获取自定义组件抛出的实例，对应export
+  // https://developers.weixin.qq.com/miniprogram/dev/framework/custom-component/events.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E7%BB%84%E4%BB%B6%E5%AE%9E%E4%BE%8B%E8%8E%B7%E5%8F%96%E7%BB%93%E6%9E%9C
+  if (vueOptions.export && isFn(vueOptions.export)) {
+    componentOptions.export = function() {
+      // 若能拿到组件实例，则将组件实例对外暴露
+      const res = vueOptions.export();
+      if (this.$vm) {
+        return { ...this.$vm, ...res};
+      }
+      return res;
+    }
+  }
+
   // externalClasses
   if (vueOptions.externalClasses) {
     componentOptions.externalClasses = vueOptions.externalClasses;
